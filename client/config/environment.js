@@ -23,7 +23,7 @@ module.exports = function(environment) {
     },
 
     contentSecurityPolicy: {
-      'connect-src': "'self' http://localhost:3000 ws://localhost:3000"
+      'connect-src': `'self' http://localhost:3000 ws://localhost:3000 ${process.env.SERVER_URL}`
     },
 
     torii: {
@@ -31,12 +31,12 @@ module.exports = function(environment) {
       providers: {
         'google-oauth2': {
           apiKey: '784728722932-loeasa79qg9v466f04u24am01gub4nea.apps.googleusercontent.com',
-          redirectUri: 'http://localhost:4200/oauth2callback',
+          redirectUri: process.env.REDIRECT_URI || 'http://localhost:4200/oauth2callback',
           scope: 'email profile'
         },
         'google-oauth2-bearer': {
           apiKey: '784728722932-loeasa79qg9v466f04u24am01gub4nea.apps.googleusercontent.com',
-          redirectUri: 'http://localhost:4200/oauth2callback',
+          redirectUri: process.env.REDIRECT_URI || 'http://localhost:4200/oauth2callback',
           scope: 'email profile'
         },
         'facebook-connect': {
@@ -44,7 +44,9 @@ module.exports = function(environment) {
           scope: 'email,public_profile'
         }
       }
-    }
+    },
+
+    serverUrl: process.env.SERVER_URL
   };
 
   if (environment === 'development') {

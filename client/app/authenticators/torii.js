@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import ToriiAuthenticator from 'ember-simple-auth/authenticators/torii';
+import config from '../config/environment';
 
 export default ToriiAuthenticator.extend({
   torii: Ember.inject.service(),
@@ -11,7 +12,7 @@ export default ToriiAuthenticator.extend({
       const authorizationCode = data.authorizationCode;
       delete data.authorizationCode;
 
-      return this.get('ajax').post('http://localhost:3000/auth', { data: { authorizationCode } })
+      return this.get('ajax').post(`${config.serverUrl || 'http://localhost:3000'}/auth`, { data: { authorizationCode } })
         .then(authObject => {
           // first, add the access_token onto the main data object
           data.access_token = authObject.access_token;

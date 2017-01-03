@@ -76,11 +76,11 @@ router.route('/comments').post((req, res, next) => {
     .then(() => {
       // update newComment's belongsTo for the use and article
       const userPromise = User.findByIdAndUpdate(newComment.author, {
-        $addToSet: { 'comments': newComment._id }
+        $addToSet: { comments: newComment._id }
       });
 
       const articlePromise = Article.findByIdAndUpdate(newComment.article, {
-        $addToSet: { 'comments': newComment._id }
+        $addToSet: { comments: newComment._id }
       });
 
       return Promise.all([userPromise, articlePromise]).then(() => {
@@ -111,7 +111,7 @@ router.route('/comments/:id').get((req, res, next) => {
         return next(err);
       }
 
-      res.json(Article.toJsonApi(comment));
+      return res.json(Article.toJsonApi(comment));
     }).catch(err => {
       err.status = 500;
       next(err);

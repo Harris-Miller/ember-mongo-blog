@@ -77,13 +77,13 @@ router.route('/articles').post((req, res, next) => {
     .then(() => {
       return User.findByIdAndUpdate(newArticle.author, {
         $addToSet: { articles: newArticle._id }
-      })
+      });
     }).then(() => {
       res.status(201);
       res.json(Article.toJsonApi(newArticle));
-    }).catch(err => {
-      err.status = 500;
-      next(err);
+    }).catch(error => {
+      error.status = 500;
+      next(error);
     });
 });
 
@@ -125,8 +125,6 @@ router.route('/articles/:id').patch((req, res, next) => {
   }
 
   const attributes = req.body.data.attributes;
-  const relationships = req.body.data.relationships;
-  const authorId = relationships.author.data.id;
 
   // TODO: authorize that the owner of the article is the current user
 

@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
+import config from '../config/environment';
 
 export default Ember.Route.extend(ApplicationRouteMixin, {
   session: Ember.inject.service(),
@@ -19,7 +20,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     const access_token = this.get('session.data.authenticated.access_token');
     
     if (access_token) {
-      return this.get('ajax').request(`http://localhost:3000/auth/check?access_token=${access_token}`)
+      return this.get('ajax').request(`${config.serverUrl || 'http://localhost:3000'}/auth/check?access_token=${access_token}`)
         .then(accessObj => {
           return this.get('store').queryRecord('user', { email: accessObj.email });
         }).then(userObj => {
