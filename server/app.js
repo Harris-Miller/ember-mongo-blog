@@ -15,7 +15,7 @@ const makeErrorObject = require('./util/make-error-object');
 
 const app = express();
 
-mongoose.connect('mongodb://localhost/ember-mongo-blog');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/ember-mongo-blog');
 
 app.use(logger('dev'));
 app.use(compression());
@@ -24,7 +24,7 @@ app.use(cookieParser());
 
 // setup HTTP headers
 app.use((req, res, next) => {
-  res.set('Access-Control-Allow-Origin', 'http://localhost:4200'); // TODO: variable this for all environments
+  res.set('Access-Control-Allow-Origin', 'http://localhost:4200, https://ember-blog-server.herokuapp.com/');
   res.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   res.set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
   // res.set('Content-Type', 'application/vnd.api+json');
