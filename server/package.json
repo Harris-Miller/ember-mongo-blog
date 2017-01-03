@@ -12,7 +12,7 @@
     "cookie-parser": "~1.4.3",
     "debug": "~2.2.0",
     "eslint": "^3.12.2",
-    "eslint-config-harris": "git+ssh://git@github.com/Harris-Miller/node-eslint-config-harris.git",
+    "eslint-config-harris": "git+https://github.com/Harris-Miller/node-eslint-config-harris.git",
     "express": "~4.14.0",
     "express-jwt": "^5.1.0",
     "jsonwebtoken": "^7.2.1",
