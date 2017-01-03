@@ -1,0 +1,23 @@
+<section class="single-article">
+  <h3>{{model.title}}</h3>
+  <p>Written by: {{model.author.fullname}} on {{model.created}}</p>
+  {{markdown-to-html model.body}}
+
+  {{#if isAuthor}}
+    {{#link-to "singleArticle.edit" model}}Edit this article{{/link-to}}
+  {{/if}}
+
+  {{#each model.comments as |comment|}}
+    <p>
+      {{comment.text}}
+      <br>
+      <small>By: {{comment.author.fullname}} @ {{comment.updated}}</small>
+    </p>
+  {{/each}}
+
+  {{#if session.isAuthenticated}}
+    {{add-comment article=model}}
+  {{/if}}
+</section>
+
+{{outlet}}

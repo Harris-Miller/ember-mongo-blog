@@ -1,0 +1,19 @@
+<h3>Create an Article</h3>
+
+<form {{action "saveArticle" article on="submit"}}>
+  <label>
+    Title:
+    <br>
+    {{input value=article.title}}
+  </label>
+  <br>
+  <label>
+    Body:
+    <br>
+    {{textarea value=article.body}}
+  </label>
+  <br>
+  <input type="submit" value="Create">
+</form>
+<br>
+<p>{{markdown-to-html article.body}}</p>

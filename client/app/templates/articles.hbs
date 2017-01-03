@@ -1,0 +1,14 @@
+<section class="article">
+  <h3>Articles</h3>
+
+  {{#each model as |article|}}
+    <article class="article">
+      <h4>{{article.title}}</h4>
+      <p>Written by: {{article.auther.fullname}} on {{article.created}}</p>
+      {{#link-to "singleArticle" article}}Read full{{/link-to}}
+    </article>
+    <br>
+  {{/each}}
+</section>
+
+{{outlet}}

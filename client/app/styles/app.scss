@@ -1,0 +1,26 @@
+@import "bootstrap";
+@import "bootstrap/theme";
+
+body {
+  padding-top: 70px;
+}
+
+.user-img {
+  height: 60px;
+  display: inline;
+}
+
+.nav > li > .a-imitate {
+  position: relative;
+  display: block;
+  padding: 15px 15px;
+  line-height: 20px;
+  color: #9d9d9d;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+
+  &:hover {
+    color: #fff;
+    background-color: transparent;
+  }
+}

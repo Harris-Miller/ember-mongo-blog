@@ -1,0 +1,14 @@
+<h2>Welcome to the Ember-Mongo-Blog</h2>
+
+<p>Use the Navigation panel above to navigate around</p>
+
+{{#if session.isAuthenticated}}
+  <p>Welcome, {{user.current.fullname}}</p>
+  {{#link-to "create"}}Create a new article{{/link-to}}
+  <h4>Your articles:</h4>
+  {{#each user.current.articles as |article|}}
+    <strong>{{article.title}}</strong> {{#link-to "singleArticle" article}}View{{/link-to}} {{#link-to "singleArticle.edit" article}}Edit{{/link-to}}
+  {{/each}}
+{{else}}
+  <p>Click "Login" above to login via Google</p>
+{{/if}}
