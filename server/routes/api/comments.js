@@ -8,18 +8,9 @@ const Comment = require('../../db/mongo/models/comment');
 
 // get all
 router.route('/comments').get((req, res, next) => {
-  let query = {};
-
-  // for coalesce find requests
-  // e.g. /comments?filter[id]=123abc,456def
-  if (req.query.filter && req.query.filter.id) {
-    const ids = req.query.filter.id.split(',');
-    query = { _id: { $in: ids } };
-  }
-
-  Comment.find(query)
+  db.comment.read({ ids: req.query.filter && req.query.filter.id })
     .then(comments => {
-      res.json(Comment.toJsonApi(comments));
+      res.json(comments);
     })
     .catch(err => {
       err.status = 500;
@@ -66,30 +57,14 @@ router.route('/comments').post((req, res, next) => {
     return next(err);
   }
 
-  const newComment = new Comment({
-    text,
-    author,
-    article
-  });
-
-  return newComment.save()
-    .then(() => {
-      // update newComment's belongsTo for the use and article
-      const userPromise = User.findByIdAndUpdate(newComment.author, {
-        $addToSet: { comments: newComment._id }
-      });
-
-      const articlePromise = Article.findByIdAndUpdate(newComment.article, {
-        $addToSet: { comments: newComment._id }
-      });
-
-      return Promise.all([userPromise, articlePromise]).then(() => {
-        res.status(201);
-        res.json(Comment.toJsonApi(newComment));
-      });
-    }).catch(err => {
-      err.status = 500;
-      next(err);
+  return db.article.create({ text, author, article })
+    .then(newComment => {
+      res.status(201);
+      res.json(newComment);
+    })
+    .catch(error => {
+      error.status = 500;
+      next(error);
     });
 });
 
@@ -97,21 +72,9 @@ router.route('/comments').post((req, res, next) => {
 router.route('/comments/:id').get((req, res, next) => {
   const id = req.params.id;
 
-  if (!id) {
-    const err = new Error('Id is required!');
-    err.status = 400;
-    return next(err);
-  }
-
-  return Comment.findById(id)
+  db.comment.read({ id })
     .then(comment => {
-      if (!comment) {
-        const err = new Error(`Comment "${id}" not found!`);
-        err.status = 404;
-        return next(err);
-      }
-
-      return res.json(Article.toJsonApi(comment));
+      res.json(comment);
     }).catch(err => {
       err.status = 500;
       next(err);
@@ -145,25 +108,28 @@ router.route('/comments/:id').patch((req, res, next) => {
     return next(err);
   }
 
-  return Comment.findByIdAndUpdate(id, {
-    $set: {
-      text: attributes.text,
-      updated: new Date()
-    }
-  }, {
-    new: true // { new: true} will make mongoose return the updated document, and not the original
-  }).then(updatedComment => {
-    res.json(Comment.toJsonApi(updatedComment));
-  }).catch(err => {
-    err.status = 500;
-    next(err);
-  });
+  return db.comment.update({ author, text })
+    .then(updatedComment => {
+      res.json(updatedComment);
+    }).catch(err => {
+      err.status = 500;
+      next(err);
+    });
 });
 
 // remove single
 router.route('/comments/:id').delete((req, res, next) => {
-  // TODO
-  next();
+  const id = req.params.id;
+
+  db.comment.delete(id)
+    .then(() => {
+      res.status(204);
+      res.end();
+    })
+    .catch(err => {
+      err.status || (err.status = 500);
+      next(err);
+    });
 });
 
 module.exports = router;
