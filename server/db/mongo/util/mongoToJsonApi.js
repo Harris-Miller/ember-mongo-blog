@@ -12,6 +12,7 @@
  */
 function mongooseModelToJsonApiModel(doc, dataType, relationships) {
   // mongoose model toJSON
+  // console.log(doc);
   doc = doc.toJSON();
 
   delete doc.__v; // we don't need mongoose's __v;
@@ -31,7 +32,7 @@ function mongooseModelToJsonApiModel(doc, dataType, relationships) {
       const relations = doc[field];
       dataObj.relationships[field] = {};
 
-      if (util.isArray(relations)) {
+      if (Array.isArray(relations)) {
         const relationsData = dataObj.relationships[field].data = [];
         relations.forEach(r => {
           relationsData.push({
