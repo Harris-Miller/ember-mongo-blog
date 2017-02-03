@@ -1,7 +1,5 @@
 'use strict';
 
-const util = require('util');
-
 /**
  * Transform a mongoose model into a json api model for api returns
  *
@@ -63,7 +61,7 @@ module.exports = function (mongoDoc, dataType, relationships) {
   };
 
   // if mongoDoc is a single doc
-  if (!util.isArray(mongoDoc)) {
+  if (!Array.isArray(mongoDoc)) {
     // run it through the transformer and set it as jsonApi.data
     jsonApi.data = mongooseModelToJsonApiModel(mongoDoc, dataType, relationships);
   } else {

@@ -2,9 +2,9 @@
 
 const express = require('express');
 const router = new express.Router();
-const User = require('../../models/user');
-const Article = require('../../models/article');
-const Comment = require('../../models/comment');
+const User = require('../../db/mongo/models/user');
+const Article = require('../../db/mongo/models/article');
+const Comment = require('../../db/mongo/models/comment');
 
 // get all
 router.route('/comments').get((req, res, next) => {

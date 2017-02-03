@@ -2,28 +2,14 @@
 
 const express = require('express');
 const router = new express.Router();
-const User = require('../../models/user');
+
+const db = require('../../util/get-db');
 
 // get all
 router.route('/users').get((req, res, next) => {
-  let query = {};
-  let queryType = 'find';
-
-  // for coalesce find requests
-  if (req.query.filter && req.query.filter.id) {
-    const ids = req.query.filter.id.split(',');
-    query = { _id: { $in: ids } };
-  } else if (req.query.email) {
-    query = { email: req.query.email };
-    queryType = 'findOne';
-  }
-
-  User[queryType](query)
+  db.user.read({ ids: req.query.filter && req.query.filter.id, email: req.query.email })
     .then(users => {
-      if (!users) {
-        return res.json({ data: null });
-      }
-      return res.json(User.toJsonApi(users));
+      return res.json(users);
     })
     .catch(err => {
       err.status = 500;
@@ -71,21 +57,14 @@ router.route('/users').post((req, res, next) => {
     return next(err);
   }
 
-  const newUser = new User({
-    email,
-    firstname,
-    lastname,
-    picture
-  });
-
-  return newUser.save()
-    .then(() => {
+  return db.user.create({ email, firstname, lastname, picture })
+    .then(newUser => {
       res.status(201);
-      res.json(User.toJsonApi(newUser));
+      return res.json(newUser);
     })
-    .catch(error => {
-      error.status = 500;
-      next(error);
+    .catch(err => {
+      err.status = 500;
+      next(err);
     });
 });
 
@@ -100,17 +79,13 @@ router.route('/users/:id').get((req, res, next) => {
     return next(err);
   }
 
-  return User.findById(id)
-    .then(user => {
-      if (!user) {
-        err = new Error(`Could not find user with id: ${id}`);
-        err.status = 404;
-        return next(err);
-      }
-      return res.json(User.toJsonApi(user));
-    }).catch(error => {
-      error.status = 500;
-      next(error);
+  db.user.read({ id })
+    .then(users => {
+      return res.json(users);
+    })
+    .catch(err => {
+      err.status = 500;
+      next(err);
     });
 });
 

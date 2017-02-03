@@ -6,16 +6,12 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const bodyParser = require('body-parser');
-
-const mongoose = require('mongoose');
-// set mongose to use native promises
-mongoose.Promise = global.Promise;
-
+const db = require('./util/get-db');
 const makeErrorObject = require('./util/make-error-object');
 
 const app = express();
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/ember-mongo-blog');
+db.connect();
 
 app.use(logger('dev'));
 app.use(compression());

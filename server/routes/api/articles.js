@@ -2,23 +2,16 @@
 
 const express = require('express');
 const router = new express.Router();
-const User = require('../../models/user');
-const Article = require('../../models/article');
+const User = require('../../db/mongo/models/user');
+const Article = require('../../db/mongo/models/article');
+
+const db = require('../../util/get-db');
 
 // get all
 router.route('/articles').get((req, res, next) => {
-  let query = {};
-
-  // for coalesce find requests
-  // e.g. /articles?filter[id]=123abc,456def
-  if (req.query.filter && req.query.filter.id) {
-    const ids = req.query.filter.id.split(',');
-    query = { _id: { $in: ids } };
-  }
-
-  Article.find(query)
+  db.article.read({ ids: req.query.filter && req.query.filter.id })
     .then(articles => {
-      res.json(Article.toJsonApi(articles));
+      res.json(articles);
     }).catch(err => {
       err.status = 500;
       next(err);
@@ -67,21 +60,12 @@ router.route('/articles').post((req, res, next) => {
     return next(err);
   }
 
-  const newArticle = new Article({
-    title,
-    body,
-    author
-  });
-
-  return newArticle.save()
-    .then(() => {
-      return User.findByIdAndUpdate(newArticle.author, {
-        $addToSet: { articles: newArticle._id }
-      });
-    }).then(() => {
+  return db.article.create({ title, body, author })
+    .then(newArticle => {
       res.status(201);
       res.json(Article.toJsonApi(newArticle));
-    }).catch(error => {
+    })
+    .catch(error => {
       error.status = 500;
       next(error);
     });
@@ -97,21 +81,13 @@ router.route('/articles/:id').get((req, res, next) => {
     return next(err);
   }
 
-  return Article.findById(id, (err, article) => {
-    console.log(article);
-    if (err) {
+  return db.article.read({ id })
+    .then(articles => {
+      res.json(articles);
+    }).catch(err => {
       err.status = 500;
-      return next(err);
-    }
-
-    if (!article) {
-      err = new Error(`Article "${id}" not found!`);
-      err.status = 404;
-      return next(err);
-    }
-
-    return res.json(Article.toJsonApi(article));
-  });
+      next(err);
+    });
 });
 
 // update single
@@ -125,28 +101,12 @@ router.route('/articles/:id').patch((req, res, next) => {
   }
 
   const attributes = req.body.data.attributes;
+  const title = attributes.title;
+  const body = attributes.body
 
   // TODO: authorize that the owner of the article is the current user
 
-  return Article.findByIdAndUpdate(
-    id,
-    {
-      $set: {
-        title: attributes.title,
-        body: attributes.body,
-        updated: new Date()
-      }
-    },
-    { new: true }, // { new: true} will make mongoose return the updated document, and not the original
-    (err, updatedArticle) => {
-      if (err) {
-        err.status = 500;
-        return next(err);
-      }
-
-      return res.json(Article.toJsonApi(updatedArticle));
-    }
-  );
+  db.article.update(id, { title, body })
 });
 
 // delete single
@@ -173,8 +133,9 @@ router.route('/articles/:id').delete((req, res, next) => {
     }
 
     // TODO: autherize that current user owns the article
+    return db.article.delete(id);
 
-    return Article.remove({ _id: id }, removeErr => {
+    return Article.findByIdAndRemove(id, removeErr => {
       if (removeErr) {
         removeErr.status = 500;
         return next(removeErr);

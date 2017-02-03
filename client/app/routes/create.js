@@ -30,7 +30,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
           this.transitionTo('singleArticle', newArticle);
         }).catch(err => {
           console.log(err);
-          alert('could not saev article!');
+          alert('could not save article!');
         });
     }
   }
