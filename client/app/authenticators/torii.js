@@ -22,12 +22,9 @@ export default ToriiAuthenticator.extend({
           // for first time log-ins, since we're authenticating using google
           // we need to create the user in our own database
           // now check if the user exists, by email
-          console.log(userObject.email);
           return this.get('store').queryRecord('user', { email: userObject.email })
             .then(user => {
-              console.log(user);
               if (!user) {
-                console.log('no users, creating...');
                 const newUser = this.get('store').createRecord('user', {
                   firstname: userObject.given_name,
                   lastname: userObject.family_name,

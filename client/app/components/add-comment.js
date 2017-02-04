@@ -6,10 +6,7 @@ export default Ember.Component.extend({
 
   actions: {
     addComment() {
-      console.log('adding a comment');
-
       const commentText = this.get('commentText');
-      console.log(commentText);
 
       if (!commentText) {
         return;

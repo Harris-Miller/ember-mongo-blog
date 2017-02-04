@@ -6,8 +6,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
   actions: {
     saveArticle(article) {
-      console.log("saving the Article!");
-
       if (!article.title) {
         alert('article must have a title!');
         return;
