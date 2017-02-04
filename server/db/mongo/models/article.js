@@ -10,8 +10,8 @@ const articleSchema = new Schema({
   removed: { type: Boolean, default: false },
   author: { type: Schema.Types.ObjectId, ref: 'User' },
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
-  created: { type: Date, default: Date.now },
-  updated: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 }, {
   id: false,
   toObject: {

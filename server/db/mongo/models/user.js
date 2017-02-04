@@ -12,8 +12,8 @@ const userSchema = new Schema({
   active: { type: Boolean, default: true },
   articles: [{ type: Schema.Types.ObjectId, ref: 'Article' }],
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
-  created: { type: Date, default: Date.now },
-  updated: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 }, {
   id: false,
   toObject: {

@@ -36,13 +36,14 @@ const postgres = {
 
     article.hasMany(comment);
     comment.belongsTo(article);
-
-    return sequalize.sync({ force: true }).then(() => {
-      if (process.env.RESET_DB || true) {
+    
+    if (process.env.RESET_DB) {
+      return sequalize.sync({ force: true }).then(() => {
         return require('./reset')(user, article, comment);
-      }
-      return Promise.resolve();
-    });
+      });
+    }
+
+    return sequalize.sync();
   },
 
   user: {

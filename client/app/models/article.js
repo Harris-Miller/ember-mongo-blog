@@ -9,6 +9,6 @@ export default DS.Model.extend({
   author: DS.belongsTo('user', { async: true }),
   comments: DS.hasMany('comment', { async: true }),
 
-  created: DS.attr('date'),
-  updated: DS.attr('date')
+  createdAt: DS.attr('date'),
+  updatedAt: DS.attr('date')
 });

@@ -9,8 +9,8 @@ const commentSchema = new Schema({
   removed: { type: Boolean, default: false },
   author: { type: Schema.Types.ObjectId, ref: 'User' },
   article: { type: Schema.Types.ObjectId, ref: 'Article' },
-  created: { type: Date, default: Date.now },
-  updated: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 }, {
   id: false,
   toObject: {
