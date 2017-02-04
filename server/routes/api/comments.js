@@ -2,9 +2,7 @@
 
 const express = require('express');
 const router = new express.Router();
-const User = require('../../db/mongo/models/user');
-const Article = require('../../db/mongo/models/article');
-const Comment = require('../../db/mongo/models/comment');
+const db = require('../../util/get-db');
 
 // get all
 router.route('/comments').get((req, res, next) => {
@@ -57,7 +55,7 @@ router.route('/comments').post((req, res, next) => {
     return next(err);
   }
 
-  return db.article.create({ text, author, article })
+  return db.comment.create({ text, author, article })
     .then(newComment => {
       res.status(201);
       res.json(newComment);
@@ -108,7 +106,7 @@ router.route('/comments/:id').patch((req, res, next) => {
     return next(err);
   }
 
-  return db.comment.update({ author, text })
+  return db.comment.update(id, { text })
     .then(updatedComment => {
       res.json(updatedComment);
     }).catch(err => {

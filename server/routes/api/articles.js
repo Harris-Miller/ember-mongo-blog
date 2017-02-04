@@ -2,8 +2,6 @@
 
 const express = require('express');
 const router = new express.Router();
-const Article = require('../../db/mongo/models/article');
-
 const db = require('../../util/get-db');
 
 // get all
@@ -62,7 +60,7 @@ router.route('/articles').post((req, res, next) => {
   return db.article.create({ title, body, author })
     .then(newArticle => {
       res.status(201);
-      res.json(Article.toJsonApi(newArticle));
+      res.json(newArticle);
     })
     .catch(error => {
       error.status = 500;

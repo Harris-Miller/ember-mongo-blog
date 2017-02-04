@@ -7,6 +7,7 @@ const mongoToJsonApi = require('../util/mongoToJsonApi');
 const articleSchema = new Schema({
   title: { type: String, required: true },
   body: { type: String, required: true },
+  removed: { type: Boolean, default: false },
   author: { type: Schema.Types.ObjectId, ref: 'User' },
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
   created: { type: Date, default: Date.now },

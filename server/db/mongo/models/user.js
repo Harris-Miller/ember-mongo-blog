@@ -9,6 +9,7 @@ const userSchema = new Schema({
   firstname: { type: String, required: true },
   lastname: { type: String, required: true },
   picture: { type: String },
+  active: { type: Boolean, default: true },
   articles: [{ type: Schema.Types.ObjectId, ref: 'Article' }],
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
   created: { type: Date, default: Date.now },

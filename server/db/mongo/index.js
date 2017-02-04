@@ -51,7 +51,8 @@ const mongo = {
         });
     },
     update() {
-
+      // TODO
+      throw new Error('User update not yet implemented!');
     },
     delete(id) {
       // TODO: clean this up, must be a better way to go about it
@@ -65,33 +66,32 @@ const mongo = {
           }
 
           // first, remove all the articles from this user, and all comments for the articles
-          return Article.remove({ _id: { $in: removedUser.articles } })
-            .then(removedArticles => {
-              // remove all comments for all removed Articles
-              const allComments = removedArticles.reduce((comments, removedArticle) => comments.concat(removedArticle.comments), []);
-              return Comment.remove({ _id: { $in: allComments } });
-            })
+          return Article.find({ _id: { $in: removedUser.articles } })
+            // we have to find them first, then remove them one at a time
+            // because we need the removedArticle to be returned, which is to article.remove().exec()'s promise
+            .then(articles => Promise.all(articles.map(article => article.remove().exec())))
+            // reduce the comment ids from all removedArticles
+            .then(removedArticles => removedArticles.reduce((comments, removedArticle) => comments.concat(removedArticle.comments), []))
+            // then find them all
+            .then(allComments => Comment.find({ _id: { $in: allComments } }))
+            // and remove those
+            .then(comments => Promise.all(comments.map(comment => comment.remove().exec())))
+            // then find and remove remaining comments from user
             .then(removedComments => {
-              // remove references from users (no need to remove references to articles, as we just removed it)
-              return Promise.all(removedComments.map(removedComment => {
-                // for all removedComments, remove ref from User
-                return User.findByIdAndUpdate(removedComment.author, {
-                  $pull: { comments: removedComment._id }
-                }).exec();
-              }));
+              return Comment.find({ _id: { $in: removedUser.comments } })
+                .then(comments => Promise.all(comments.map(comment => comment.remove().exec())))
+                .then(removedCommentsInner => removedComments.concat(removedCommentsInner))
             })
-            .then(() => {
-              // then, remove any left over comments from that user that didn't get removed from being a part of a removed article
-              return Comment.remove({ _id: { $in: removedUser.comments } });
-            })
-            .then(removedComments => {
-              // and remove refs to articles for removed comments
-              return Promise.all(removedComments.map(removedComment => {
-                return Article.findByIdAndUpdate(removedComment.article, {
+            // remove references from users
+            .then(removedComments => Promise.all(removedComments.map(removedComment => User.findByIdAndUpdate(removedComment.author, {
                   $pull: { comments: removedComment._id }
-                }).exec();
-              }));
-            });
+                }).exec()))
+            )
+            // and remove refs to articles for removed comments
+            .then(removedComments => Promise.all(removedComments.map(removedComment => Article.findByIdAndUpdate(removedComment.article, {
+                $pull: { comments: removedComment._id }
+              }).exec()))
+            );
         });
     }
   },
@@ -213,7 +213,8 @@ const mongo = {
         query._id = { $in: ids };
         queryType = 'find';
       } else if (id) {
-        query._id = 'findOne';
+        query._id = id;
+        queryType = 'findOne';
       } else {
         queryType = 'find';
       }
@@ -221,21 +222,21 @@ const mongo = {
       return Comment[queryType](query)
         .then(comments => {
           if (!comments) {
-            return { data: null }
+            return { data: null };
           }
 
           return Comment.toJsonApi(comments);
-        }, {
-          new: true // { new: true} will make mongoose return the updated document, and not the original
-        }).then(updateComment => Comment.toJsonApi(updateComment));
+        });
     },
-    update({ author, text }) {
+    update(id, { text }) {
       return Comment.findByIdAndUpdate(id, {
         $set: {
-          text: text,
+          text,
           updated: new Date()
         }
-      });
+      }, {
+        new: true // { new: true} will make mongoose return the updated document, and not the original
+      }).then(updatedComment => Comment.toJsonApi(updatedComment));
     },
     delete(id) {
       return Comment.findByIdAndRemove(id)
