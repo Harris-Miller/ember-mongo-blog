@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
+    "start:postgres": "set DATABASE=postgres&&node ./bin/www",
     "lint": "eslint bin/www **/*.js"
   },
   "dependencies": {
@@ -19,6 +20,9 @@
     "mongoose": "^4.7.4",
     "morgan": "~1.7.0",
     "node-uuid": "^1.4.7",
-    "request": "^2.79.0"
+    "pg": "^6.1.2",
+    "pg-hstore": "^2.3.2",
+    "request": "^2.79.0",
+    "sequelize": "^3.30.1"
   }
 }
