@@ -12,6 +12,8 @@ export default DS.Model.extend({
   email: DS.attr('string'),
   picture: DS.attr('string'),
 
+  active: DS.attr('boolean'),
+
   articles: DS.hasMany('article', { async: true }),
   comments: DS.hasMany('comment', { async: true }),
 
