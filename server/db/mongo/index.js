@@ -55,7 +55,7 @@ const mongo = {
       throw new Error('User update not yet implemented!');
     },
     delete(id) {
-      // TODO: clean this up, must be a better way to go about it
+      // TODO: fix!
       return User.findByIdAndRemove(id)
         .then(removedUser => {
           // if removedArticle is null here, then it was not found!
@@ -69,29 +69,31 @@ const mongo = {
           return Article.find({ _id: { $in: removedUser.articles } })
             // we have to find them first, then remove them one at a time
             // because we need the removedArticle to be returned, which is to article.remove().exec()'s promise
-            .then(articles => Promise.all(articles.map(article => article.remove().exec())))
+            .then(articles => Promise.all(articles.map(article => article.remove())))
             // reduce the comment ids from all removedArticles
             .then(removedArticles => removedArticles.reduce((comments, removedArticle) => comments.concat(removedArticle.comments), []))
             // then find them all
             .then(allComments => Comment.find({ _id: { $in: allComments } }))
             // and remove those
-            .then(comments => Promise.all(comments.map(comment => comment.remove().exec())))
+            .then(comments => Promise.all(comments.map(comment => comment.remove())))
             // then find and remove remaining comments from user
             .then(removedComments => {
               return Comment.find({ _id: { $in: removedUser.comments } })
-                .then(comments => Promise.all(comments.map(comment => comment.remove().exec())))
-                .then(removedCommentsInner => removedComments.concat(removedCommentsInner))
+                .then(comments => Promise.all(comments.map(comment => comment.remove())))
+                .then(removedCommentsInner => removedComments.concat(removedCommentsInner));
             })
-            // remove references from users
-            .then(removedComments => Promise.all(removedComments.map(removedComment => User.findByIdAndUpdate(removedComment.author, {
-                  $pull: { comments: removedComment._id }
-                }).exec()))
-            )
-            // and remove refs to articles for removed comments
-            .then(removedComments => Promise.all(removedComments.map(removedComment => Article.findByIdAndUpdate(removedComment.article, {
+            .then(removedComments => {
+              // remove refs from Users
+              const userPromises = removedComments.map(removedComment => User.findByIdAndUpdate(removedComment.author, {
                 $pull: { comments: removedComment._id }
-              }).exec()))
-            );
+              }).exec());
+
+              const articlePromises = removedComments.map(removedComment => Article.findByIdAndUpdate(removedComment.article, {
+                $pull: { comments: removedComment._id }
+              }).exec());
+
+              return Promise.all(userPromises.concat(articlePromises));
+            });
         });
     }
   },
@@ -164,17 +166,17 @@ const mongo = {
             $pull: { articles: removedArticle._id }
           }).exec();
 
-          // and remove all comments for the article
-          const commentsPromise = Comment.remove({ _id: { $in: removedArticle.comments } })
-            .then(removedComments => {
-              // remove references from users (no need to remove references to articles, as we just removed it)
-              return Promise.all(removedComments.map(removedComment => {
-                // for all removedComments, remove ref from User
-                return User.findByIdAndUpdate(removedComment.author, {
-                  $pull: { comments: removedComment._id }
-                }).exec();
-              }));
-            });
+          // first find all comments
+          const commentsPromise = Comment.find({ _id: { $in: removedArticle.comments } })
+            // then remove then
+            .then(comments => Promise.all(comments.map(comment => comment.remove())))
+            // remove references from users (no need to remove references to articles, as we just removed it)
+            .then(removedComments => Promise.all(removedComments.map(removedComment => {
+              // for all removedComments, remove ref from User
+              return User.findByIdAndUpdate(removedComment.author, {
+                $pull: { comments: removedComment._id }
+              }).exec();
+            })));
 
           return Promise.all([authorPromise, commentsPromise]);
         });
