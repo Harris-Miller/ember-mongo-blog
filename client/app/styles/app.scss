@@ -1,5 +1,19 @@
 @import "ember-bootstrap/bootstrap";
 
+/* solid variables */
+$red: #FF4136;
+$blue: #0074D9;
+$black: #111111;
+$white: #FFFFFF;
+$darkGray: #e9ebee;
+
+/* contexual variales */
+$bodyBackground: $darkGray;
+
+body {
+	background-color: $bodyBackground;
+}
+
 .user-img {
   height: 50px;
   display: inline;
