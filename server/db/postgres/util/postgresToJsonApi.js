@@ -48,7 +48,7 @@ module.exports = {
   },
   comment(comments) {
     return postgressModelToJsonApiModel(
-      comment,
+      comments,
       'Comment',
       [
         { field: 'author', type: 'User' },

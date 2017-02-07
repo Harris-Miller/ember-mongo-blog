@@ -1,6 +1,7 @@
 'use strict';
 
 const Sequelize = require('sequelize');
+const standardConfig = require('./standard-config');
 
 function user(sequalize) {
   return sequalize.define('user', {
@@ -9,7 +10,7 @@ function user(sequalize) {
     lastname: Sequelize.STRING,
     picture: Sequelize.STRING,
     active: { type: Sequelize.BOOLEAN, defaultValue: true }
-  });
+  }, standardConfig);
 }
 
 module.exports = user;

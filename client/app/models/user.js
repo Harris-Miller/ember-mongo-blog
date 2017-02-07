@@ -1,7 +1,8 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+import Base from './base';
 
-export default DS.Model.extend({
+export default Base.extend({
   firstname: DS.attr('string'),
   lastname: DS.attr('string'),
 
@@ -15,8 +16,5 @@ export default DS.Model.extend({
   active: DS.attr('boolean'),
 
   articles: DS.hasMany('article', { async: true }),
-  comments: DS.hasMany('comment', { async: true }),
-
-  createdAt: DS.attr('date'),
-  updatedAt: DS.attr('date')
+  comments: DS.hasMany('comment', { async: true })
 });

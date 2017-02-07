@@ -39,18 +39,18 @@ function modelToJsonApiModelBase(doc, dataType, relationships, buildDataObj, bui
   return dataObj;
 }
 
-module.exports = function (mongoDoc, dataType, relationships, buildDataObj, buildRelationsObj) {
+module.exports = function (dbDoc, dataType, relationships, buildDataObj, buildRelationsObj) {
   const jsonApi = {
     data: []
   };
 
   // if mongoDoc is a single doc
-  if (!Array.isArray(mongoDoc)) {
+  if (!Array.isArray(dbDoc)) {
     // run it through the transformer and set it as jsonApi.data
-    jsonApi.data = modelToJsonApiModelBase(mongoDoc, dataType, relationships, buildDataObj, buildRelationsObj);
+    jsonApi.data = modelToJsonApiModelBase(dbDoc, dataType, relationships, buildDataObj, buildRelationsObj);
   } else {
     //run each of them through the transformer, pushing them only jsonApi.data
-    mongoDoc.forEach(doc => {
+    dbDoc.forEach(doc => {
       jsonApi.data.push(modelToJsonApiModelBase(doc, dataType, relationships, buildDataObj, buildRelationsObj));
     });
   }

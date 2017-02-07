@@ -36,8 +36,8 @@ const postgres = {
 
     article.hasMany(comment);
     comment.belongsTo(article);
-    
-    if (process.env.RESET_DB) {
+
+    if (process.env.RESET_DB || true) {
       return sequalize.sync({ force: true }).then(() => {
         return require('./reset')(user, article, comment);
       });
@@ -81,6 +81,35 @@ const postgres = {
 
       return user[queryType](query).then(users => {
         return postgresToJsonApi.user(users);
+      });
+    }
+  },
+
+  article: {
+    create() {
+
+    },
+    read({ id, ids }) {
+      const query = {};
+      let queryType;
+
+      // for coalesce find requests
+      if (ids && Array.isArray(ids)) {
+        query.where = {
+          id: { in: ids }
+        };
+        queryType = 'findAll';
+      } else if (id) {
+        query.where = {
+          id
+        };
+        queryType = 'findOne';
+      } else {
+        queryType = 'findAll';
+      }
+
+      return article[queryType](query).then(articles => {
+        return postgresToJsonApi.article(articles);
       });
     }
   }
