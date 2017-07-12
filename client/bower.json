@@ -1,7 +1,4 @@
 {
   "name": "client",
-  "dependencies": {
-    "bootstrap": "^3.3.7",
-    "showdown": "^1.6.3"
-  }
+  "dependencies": {}
 }

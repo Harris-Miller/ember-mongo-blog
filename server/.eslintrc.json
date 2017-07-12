@@ -1,3 +1,3 @@
 {
-	"extends": ["eslint-config-harris", "eslint-config-harris/node", "eslint-config-harris/es6"]
+	"extends": ["eslint-config-harris/node-recommended"]
 }

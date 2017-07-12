@@ -4,16 +4,15 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "start:postgres": "set DATABASE=postgres&&node ./bin/www",
+    "start:postgres": "cross-env DATABASE=postgres node ./bin/www",
     "lint": "eslint bin/www **/*.js"
   },
   "dependencies": {
     "body-parser": "~1.15.2",
     "compression": "^1.6.2",
     "cookie-parser": "~1.4.3",
+    "cross-env": "^5.0.1",
     "debug": "~2.2.0",
-    "eslint": "^3.12.2",
-    "eslint-config-harris": "git+https://github.com/Harris-Miller/node-eslint-config-harris.git",
     "express": "~4.14.0",
     "express-jwt": "^5.1.0",
     "jsonwebtoken": "^7.2.1",
@@ -24,5 +23,11 @@
     "pg-hstore": "^2.3.2",
     "request": "^2.79.0",
     "sequelize": "^3.30.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "eslint": "^4.2.0",
+    "eslint-config-harris": "^1.0.0-rc.2",
+    "eslint-plugin-babel": "^4.1.1"
   }
 }

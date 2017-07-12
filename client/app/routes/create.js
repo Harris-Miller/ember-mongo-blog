@@ -26,8 +26,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
         .then(() => {
           // transition to article view
           this.transitionTo('singleArticle', newArticle);
-        }).catch(err => {
-          console.log(err);
+        }).catch(() => {
           alert('could not save article!');
         });
     }
