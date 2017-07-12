@@ -1,6 +1,6 @@
 'use strict';
 
-const uuid = require('node-uuid');
+const uuid = require('uuid');
 
 /**
  * create an error object to match jsonapi spec (http://jsonapi.org/format/#errors)

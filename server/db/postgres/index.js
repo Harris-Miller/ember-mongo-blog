@@ -12,9 +12,9 @@ let comment;
 
 const postgres = {
   connect() {
-    const sequalize = new Sequelize('blog', 'postgres', null, {
+    const sequalize = new Sequelize('blog', 'harris', null, {
       host: 'localhost',
-      port: 5433,
+      port: 5432,
       dialect: 'postgres',
       pool: {
         max: 5,
